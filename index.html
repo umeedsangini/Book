@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#160d09">
+<title>Lena-Dena — Your Personal Money Diary</title>
+<style>
+:root{
+  --ink:#342219;--muted:#806b54;--paper:#ead9b7;--paper2:#f3e8d0;
+  --leather:#32180f;--gold:#b18a4c;--gold2:#e0c17e;--line:rgba(100,69,39,.22);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Georgia,"Times New Roman",serif;color:var(--ink)}
+body{
+ background:radial-gradient(ellipse at 50% 20%,#493021 0,#1b100b 52%,#090605 100%);
+ min-height:100vh;overflow-x:hidden;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+#app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.hidden{display:none!important}
+.eyebrow{font:10px/1.4 Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#b99a69}
+.cover-wrap{width:min(390px,92vw);perspective:1400px;filter:drop-shadow(0 25px 25px #0009)}
+.cover{
+ position:relative;min-height:590px;border-radius:9px 14px 14px 9px;padding:22px;
+ background:
+  radial-gradient(ellipse at 24% 18%,#a66b3d55,transparent 34%),
+  radial-gradient(ellipse at 78% 82%,#10070488,transparent 42%),
+  repeating-linear-gradient(8deg,#0000000b 0 1px,#ffffff08 1px 3px),
+  repeating-linear-gradient(92deg,#ffffff04 0 2px,transparent 2px 7px),
+  linear-gradient(110deg,#1d0c07,#63351f 27%,#482516 62%,#1b0b07);
+ border:2px solid #8b6543;box-shadow:inset 0 0 0 4px #1b0d09,inset 0 0 0 6px #a27a4d,inset 0 0 0 8px #2a120a,inset 0 0 42px #090403,12px 12px 0 #160b07,0 0 28px #b8894a22;
+ transform-origin:left center;transition:transform 1.15s cubic-bezier(.2,.75,.15,1),opacity .6s;
+}
+.cover:before{content:"";position:absolute;inset:13px;border:1px solid #b28a554f;border-radius:5px;pointer-events:none}
+.cover:after{content:"";position:absolute;inset:22px;border:1px solid #16090588;pointer-events:none}
+.cover.opening{transform:rotateY(-112deg);opacity:.15}
+.cover.swipe-ready{cursor:grab;touch-action:pan-y}\n#coverWrap{touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.cover.swiping{cursor:grabbing}
+.swipe-arrow{display:inline-block;margin-left:8px;color:#d9b77b;font-size:16px;animation:nudge 1.3s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateX(0);opacity:.65}50%{transform:translateX(-9px);opacity:1}}
+.cover-ornament{position:absolute;inset:27px;border:2px solid #9b7041a8;outline:1px solid #160a06;outline-offset:5px;pointer-events:none}
+.cover-ornament:before,.cover-ornament:after{content:"✥  ❧  ✥  ❧  ✥";position:absolute;left:0;right:0;text-align:center;color:#bd9360;font-size:18px;letter-spacing:8px;text-shadow:0 2px 3px #090403}
+.cover-ornament:before{top:8px}.cover-ornament:after{bottom:8px}
+.cover-title{text-align:center;margin-top:66px;position:relative;z-index:1}
+.cover-title h1{font-size:34px;letter-spacing:3px;color:#e0c18a;text-shadow:0 2px 2px #090403,0 0 12px #d0a05a55;margin:14px 0 7px;font-weight:normal}
+.cover-title p{font:10px Arial,sans-serif;letter-spacing:4px;color:#c3a477;margin:0}
+.gem-setting{
+ width:164px;height:164px;margin:65px auto 0;border-radius:50%;display:grid;place-items:center;
+ background:repeating-conic-gradient(from 0deg,#21100b 0 5deg,#855a37 6deg 8deg,#28130c 10deg 14deg);
+ box-shadow:0 0 0 5px #180b07,0 0 0 8px #986b3e,0 0 0 10px #261108,inset 0 0 15px #000;
+}
+.gem{width:78px;height:92px;border-radius:48% 48% 45% 45%;transform:rotate(2deg);
+ background:radial-gradient(ellipse at 30% 22%,#8ad4a0 0,#1d865a 18%,#075139 48%,#012c22 76%,#001710 100%);
+ border:4px solid #352018;box-shadow:inset 4px 3px 7px #c1f2c566,inset -7px -9px 12px #00140e,0 0 0 3px #b08a51,0 8px 12px #0009}
+.gem:after{content:"";display:block;width:35px;height:6px;border-radius:50%;background:#b5f1cb66;transform:rotate(-28deg);margin:20px 0 0 13px;filter:blur(2px)}
+.lock{position:absolute;z-index:3;left:50%;top:420px;transform:translateX(-50%);width:83px;height:94px;border-radius:13px 13px 17px 17px;
+ background:linear-gradient(110deg,#6e502b,#e0c17e 25%,#80602e 48%,#e4c986 70%,#60431f);
+ border:2px solid #3c2916;box-shadow:0 5px 9px #000b,inset 0 0 0 3px #b18a4c;display:grid;place-items:center}
+.lock:before{content:"";position:absolute;width:42px;height:42px;border:8px solid #c6a35e;border-bottom:0;border-radius:28px 28px 0 0;top:-32px;box-shadow:inset 0 3px 4px #fff5}
+.keyhole{width:13px;height:23px;background:#2a170c;border-radius:9px 9px 3px 3px;position:relative;box-shadow:inset 0 1px 3px #000}
+.keyhole:after{content:"";position:absolute;width:9px;height:9px;background:#2a170c;border-radius:50%;top:13px;left:2px}
+.unlock-btn{position:absolute;inset:0;border:0;background:transparent;color:transparent;border-radius:12px;z-index:5}
+.tap-hint{position:absolute;bottom:32px;left:0;right:0;text-align:center;font:10px Arial,sans-serif;letter-spacing:3px;color:#c6a578}
+.open-book{width:min(980px,96vw);min-height:650px;display:none;position:relative;filter:drop-shadow(0 25px 24px #0009);animation:bookIn .8s ease both}
+@keyframes bookIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:none}}
+.book-spine{position:absolute;left:50%;top:0;bottom:0;width:22px;transform:translateX(-50%);z-index:3;background:linear-gradient(90deg,#8e633b,#3a1c10 35%,#1b0d08 55%,#a17b4c);box-shadow:0 0 12px #3b2417}
+.book-pages{display:grid;grid-template-columns:1fr 1fr;min-height:650px;border:10px solid #32180f;border-radius:12px;background:#4a2818;overflow:hidden;box-shadow:inset 0 0 0 2px #9d7446}
+.page{
+ position:relative;padding:34px clamp(18px,4vw,48px);min-width:0;
+ background:
+  radial-gradient(ellipse at 50% 0%,#fff9 0,transparent 58%),
+  radial-gradient(ellipse at 15% 80%,#c7ad8050 0,transparent 42%),
+  linear-gradient(100deg,#dfcba5,#f1e4c8 12%,#ead9b7 90%,#d5bf98);
+ box-shadow:inset -13px 0 20px #6c4a2a16,inset 0 0 35px #8e70451c;
+}
+.page:after{
+ content:"✧";position:absolute;right:25px;bottom:19px;color:#a88a5e88;
+ font-size:17px;pointer-events:none;text-shadow:0 1px #fff8;
+}
+.page.left{border-radius:4px 0 0 4px}
+.page.right{border-radius:0 4px 4px 0;box-shadow:inset 13px 0 20px #6c4a2a16,inset 0 0 35px #8e70451c}
+.page:before{content:"";position:absolute;inset:13px;border:1px solid #9a79504c;pointer-events:none}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #9d815c;padding-bottom:12px;margin-bottom:20px}\n
+.brand-small{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#806344}
+.back-setup{border:1px solid #896a43;border-radius:3px;padding:6px 8px;background:linear-gradient(#f1e4c9,#d9c39c);color:#543a23;font:9px Arial,sans-serif;letter-spacing:.4px;white-space:nowrap}
+.page-number{font:10px Arial,sans-serif;color:#987d59}
+h2{font-size:clamp(22px,3vw,30px);font-weight:normal;margin:7px 0 4px;color:#503521}
+.subtitle{font:10px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#957b58}
+.primary,.secondary,.danger,.type-btn{
+ border:1px solid #896a43;border-radius:4px;padding:11px 14px;background:linear-gradient(#8c6338,#674322);color:#fff0d2;
+ box-shadow:0 2px 3px #4b2b1733;font:11px Arial,sans-serif;letter-spacing:1px;text-transform:uppercase
+}
+.primary:hover,.secondary:hover,.type-btn:hover{filter:brightness(1.1)}
+.secondary{background:linear-gradient(#f1e4c9,#d9c39c);color:#543a23}
+.danger{background:linear-gradient(#8d4435,#63291e);border-color:#77382a}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+.owner-line{font:10px Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:#9a805d;margin:4px 0 14px}
+.stat-card{padding:14px;border:1px solid #aa906c;background:#e9d8b6b8;box-shadow:inset 0 0 12px #fff6;margin:14px 0}
+.stat-label{font:9px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#8b704e}
+.stat-value{font-size:28px;margin-top:6px;color:#49301d}
+.page-list{display:grid;gap:9px;margin-top:17px}
+.page-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border:1px solid #b39a74;background:#f3e6cb99;cursor:pointer;transition:.2s}
+.page-item:hover{transform:translateX(3px);background:#f7ebd3}
+.page-item strong{font-size:15px;font-weight:normal}
+.page-item small{display:block;font:9px Arial,sans-serif;letter-spacing:1px;color:#8b7556;margin-top:4px}
+.amount-input,.text-input{width:100%;padding:10px 9px;border:0;border-bottom:1px solid #9c815c;background:#f6ecd7a8;color:#3b291b;outline:none;border-radius:2px;font-size:15px}
+.field{margin:12px 0}.setup-panel{text-align:center;max-width:430px;margin:0 auto;padding-top:65px}.setup-panel h2{text-align:center}.setup-panel .field{text-align:center}.setup-panel .field label{text-align:center}.setup-panel .text-input{text-align:center}.setup-panel .action-row{justify-content:center}.language-tabs{display:flex;justify-content:center;gap:10px;margin:24px auto 26px}.language-tab{min-width:112px;padding:12px 22px;border:1px solid #896a43;border-radius:4px;background:linear-gradient(#f1e4c9,#d9c39c);color:#543a23;font:12px Arial,sans-serif;letter-spacing:1px}.language-tab.active{background:linear-gradient(#8c6338,#674322);color:#fff0d2;outline:2px solid #d0b277;outline-offset:2px}
+.field label{display:block;font:9px Arial,sans-serif;letter-spacing:1.5px;text-transform:uppercase;color:#876d4b;margin-bottom:5px}
+.type-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+.type-btn{padding:18px 8px;font-family:Georgia,serif;font-size:15px;text-transform:none;letter-spacing:0}
+.type-btn.active{outline:2px solid #d0b277;outline-offset:2px}
+.entry-list{margin-top:14px;display:grid;gap:7px;max-height:270px;overflow:auto;padding-right:3px}
+.entry{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px;padding:9px 7px;border-bottom:1px dashed #aa906b;background:#f3e6cb66}
+.entry input[type=checkbox]{accent-color:#70502d;width:17px;height:17px}
+.entry-name{font-size:14px;overflow-wrap:anywhere}
+.entry-name.done{text-decoration:line-through;color:#99866c}
+.entry-amount{font:12px Arial,sans-serif;color:#543923;white-space:nowrap}
+.entry-actions{display:flex;gap:4px;grid-column:2/4;justify-content:flex-end}
+.mini{border:0;background:transparent;color:#765637;font:10px Arial,sans-serif;text-decoration:underline;padding:2px 4px}
+.balance-strip{display:flex;justify-content:space-between;align-items:end;gap:8px;border-top:1px solid #a98b63;border-bottom:1px solid #a98b63;padding:12px 0;margin:14px 0}
+.balance-strip strong{font-size:23px;font-weight:normal}
+.empty{font-style:italic;color:#9b8565;text-align:center;padding:22px 5px;font-size:14px}
+.modal-backdrop{position:fixed;inset:0;background:#100905b8;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
+.modal{width:min(390px,100%);background:linear-gradient(135deg,#f3e7cd,#dfc89e);border:7px solid #482719;outline:1px solid #bd965b;padding:22px;box-shadow:0 20px 50px #0009}
+.modal h3{font-size:23px;font-weight:normal;margin:0 0 15px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#29170f;color:#f1dfbd;padding:10px 16px;border:1px solid #9d7848;font:12px Arial,sans-serif;z-index:40;opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:1}
+.back-link{border:0;background:transparent;color:#806344;font:11px Arial,sans-serif;text-decoration:underline;padding:8px 0}
+@media(max-width:700px){
+ #app{padding:10px}
+ .cover-wrap{width:min(350px,94vw)}
+ .cover{min-height:550px}
+ .lock{top:395px}
+ .open-book{width:100%;min-height:0}
+ .book-spine{display:none}
+ .book-pages{grid-template-columns:1fr;min-height:0;border-width:7px}
+ .page{min-height:580px;padding:27px 23px;background-color:#ead9b7}
+ .page.left{display:none}
+ .page.right{border-radius:3px}
+ .page.right.home{display:block}
+ .page.right.detail{display:block}
+ .page.right.create{display:block}
+ .page.right.flipping{animation:flip .35s ease}
+ @keyframes flip{0%{transform:rotateY(0);opacity:1}50%{transform:rotateY(-8deg);opacity:.75}100%{transform:rotateY(0);opacity:1}}
+}
+@media(min-width:701px){
+ .page.right{display:block}
+}
+@media(max-height:720px){.cover{min-height:520px}.lock{top:370px}.open-book{transform:scale(.94)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <section class="cover-wrap" id="coverWrap" aria-label="Diary cover">
+    <div class="cover" id="cover">
+      <div class="cover-ornament"></div>
+      <div class="cover-title">
+        <div class="eyebrow">A personal ledger</div>
+        <h1>LENA-DENA</h1>
+        <p>MY PRIVATE MONEY DIARY</p>
+      </div>
+      <div class="gem-setting"><div class="gem"></div></div>
+      <div class="lock" aria-hidden="true"><div class="keyhole"></div></div>
+      <div class="tap-hint" id="swipeHint">TAP ANYWHERE TO OPEN</div>
+    </div>
+  </section>
+
+  <main class="open-book" id="book">
+    <div class="book-pages">
+      <section class="page left">
+        <div class="page-head"><span class="brand-small">Lena-Dena</span><span class="page-number">PERSONAL LEDGER</span></div>
+        <div class="empty" style="margin-top:150px">“Small notes make a clear account.”</div>
+        <div style="text-align:center;color:#9c805a;font-size:24px;margin-top:30px">❧ ✥ ❧</div>
+      </section>
+      <section class="page right home" id="rightPage">
+        <div class="page-head"><span class="brand-small">Lena-Dena</span><span class="page-number" id="pageNo">PAGE 01</span><button class="back-setup hidden" id="backSetup" type="button">← Name &amp; Language</button></div>
+        <div id="welcomeView" class="setup-panel">
+          <div class="subtitle">A diary that belongs to you</div>
+          <h2>Welcome to Lena-Dena</h2>
+          <p id="setupIntro" style="font-style:italic;color:#806b54;line-height:1.6">Choose your language, then enter your name.</p>
+          <div class="language-tabs" role="group" aria-label="Choose language"><button type="button" class="language-tab active" id="englishTab">English</button><button type="button" class="language-tab" id="hindiTab">हिन्दी</button></div><select id="languageChoice" class="hidden" aria-hidden="true"><option value="en">English</option><option value="hi">हिन्दी</option></select>
+          <div class="field"><label id="ownerLabel" for="ownerName">Your name</label><input class="text-input" id="ownerName" maxlength="40" autocomplete="name" placeholder="Enter your name"></div>
+          <div class="action-row"><button class="primary" id="saveOwner">Open My Diary</button></div>
+        </div>
+        <div id="homeView" class="hidden">
+          <div class="subtitle" id="welcomeSubtitle">Your personal money diary</div>
+          <h2 id="homeHeading">My Diary</h2>
+          <div class="stat-card">
+            <div class="stat-label">Total created pages</div>
+            <div class="stat-value" id="totalPages">0</div>
+          </div>
+          <div class="action-row"><button class="primary" id="createBtn">＋ Create New Page</button></div>
+          <div class="subtitle">Your ledger pages</div><p id="saveNote" style="font:10px Arial,sans-serif;color:#806b54;margin:8px 0 0">Your diary is saved automatically on this device.</p>
+          <div class="page-list" id="pageList"></div>
+          <div class="empty" id="emptyHome">Your diary is waiting for its first page.</div>
+        </div>
+        <div id="createView" class="hidden">
+          <button class="back-link" id="backHome">← Back to diary</button>
+          <div class="subtitle">A new record begins</div><h2>Create New Page</h2>
+          <div class="type-options">
+            <button class="type-btn active" data-type="expense">− Expenses</button>
+            <button class="type-btn" data-type="earning">＋ Earning</button>
+          </div>
+          <div class="field"><label for="newName">Page name</label><input class="text-input" id="newName" placeholder="e.g. Home Expenses"></div>
+          <div class="field"><label for="newAmount">Starting amount (₹)</label><input class="amount-input" id="newAmount" type="number" min="0" step="0.01" placeholder="0"></div>
+          <div class="action-row"><button class="primary" id="savePage">Create Diary Page</button></div>
+        </div>
+        <div id="detailView" class="hidden">
+          <button class="back-link" id="backPages">← All diary pages</button>
+          <div class="subtitle" id="detailType">EXPENSES</div>
+          <h2 id="detailName">Home Expenses</h2>
+          <div class="field"><label for="startingAmount">Starting amount (₹)</label><input class="amount-input" id="startingAmount" type="number" min="0" step="0.01"></div>
+          <div class="balance-strip"><div><div class="stat-label">Current balance</div><strong id="balance">₹0</strong></div><div style="text-align:right"><div class="stat-label">Entries</div><strong id="entryCount">0</strong></div></div>
+          <div class="subtitle">Add a new entry</div>
+          <div class="field"><label for="entryName">Entry name</label><input class="text-input" id="entryName" placeholder="e.g. Groceries"></div>
+          <div class="field"><label for="entryAmount">Amount (₹)</label><input class="amount-input" id="entryAmount" type="number" min="0" step="0.01" placeholder="0"></div>
+          <div class="action-row"><button class="primary" id="addEntry">＋ Add Entry</button></div>
+          <div class="subtitle">Entries — tick to include</div>
+          <div class="entry-list" id="entryList"></div>
+          <div class="action-row"><button class="secondary" id="renamePage">Rename page</button><button class="danger" id="deletePage">Delete page</button></div>
+        </div>
+      </section>
+    </div>
+    <div class="book-spine"></div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h3 id="modalTitle">Edit entry</h3>
+    <div id="modalBody"></div>
+    <div class="modal-actions"><button class="secondary" id="modalCancel">Cancel</button><button class="primary" id="modalSave">Save</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+ const KEY='lena-dena-diary-fresh-v1';
+ let data=load(), selectedType='expense', activeId=null, modalAction=null;
+ const $=id=>document.getElementById(id);
+
+  let lang=localStorage.getItem('lena-dena-language-v1')||'en';
+  const T={
+   en:{intro:'Choose your language, then enter your name.',name:'Your name',enter:'Enter your name',open:'Open My Diary',welcome:'Welcome to Lena-Dena',subtitle:'Your personal money diary',my:'My Diary',total:'Total created pages',create:'＋ Create New Page',pages:'Your ledger pages',waiting:'Your diary is waiting for its first page.',back:'← Back to diary',newrecord:'A new record begins',newpage:'Create New Page',expense:'− Expenses',earning:'＋ Earning',pagename:'Page name',pagenamehint:'e.g. Home Expenses',starting:'Starting amount (₹)',createpage:'Create Diary Page',allpages:'← All diary pages',addnew:'Add a new entry',entryname:'Entry name',entryhint:'e.g. Groceries',amount:'Amount (₹)',add:'＋ Add Entry',entries:'Entries — tick to include',rename:'Rename page',delete:'Delete page',balance:'Current balance',count:'Entries',noentries:'No entries yet. Add the first note above.',edit:'Edit',remove:'Delete',entername:'Please enter your name first.',enterpage:'Please enter a page name.',validstart:'Enter a valid starting amount.',ready:'Your new page is ready.',enterentry:'Enter an entry name.',validamount:'Enter an amount greater than zero.',added:'Entry added.',editentry:'Edit entry',validedit:'Enter a valid name and amount.',renamepage:'Rename page',newname:'New page name',emptyname:'Page name cannot be empty.',cancel:'Cancel',save:'Save',welcomeToast:'Welcome to your diary, '},
+   hi:{intro:'पहले अपनी भाषा चुनें, फिर अपना नाम लिखें।',name:'आपका नाम',enter:'अपना नाम लिखें',open:'मेरी डायरी खोलें',welcome:'लीना-देना में आपका स्वागत है',subtitle:'आपकी निजी पैसों की डायरी',my:'मेरी डायरी',total:'कुल बनाए गए पेज',create:'＋ नया पेज बनाएं',pages:'आपके हिसाब के पेज',waiting:'आपकी डायरी अपने पहले पेज का इंतज़ार कर रही है।',back:'← डायरी पर वापस जाएं',newrecord:'नया हिसाब शुरू करें',newpage:'नया पेज बनाएं',expense:'− खर्चे',earning:'＋ कमाई',pagename:'पेज का नाम',pagenamehint:'जैसे: घर का खर्च',starting:'शुरुआती राशि (₹)',createpage:'डायरी पेज बनाएं',allpages:'← सभी हिसाब के पेज',addnew:'नई एंट्री जोड़ें',entryname:'एंट्री का नाम',entryhint:'जैसे: किराने का सामान',amount:'राशि (₹)',add:'＋ एंट्री जोड़ें',entries:'शामिल करने के लिए एंट्री पर टिक करें',rename:'पेज का नाम बदलें',delete:'पेज हटाएं',balance:'मौजूदा बैलेंस',count:'एंट्री',noentries:'अभी कोई एंट्री नहीं है। ऊपर पहली एंट्री जोड़ें।',edit:'बदलें',remove:'हटाएं',entername:'कृपया पहले अपना नाम लिखें।',enterpage:'कृपया पेज का नाम लिखें।',validstart:'शुरुआती राशि सही लिखें।',ready:'आपका नया पेज तैयार है।',enterentry:'एंट्री का नाम लिखें।',validamount:'शून्य से अधिक राशि लिखें।',added:'एंट्री जोड़ दी गई।',editentry:'एंट्री बदलें',validedit:'सही नाम और राशि लिखें।',renamepage:'पेज का नाम बदलें',newname:'नया पेज नाम',emptyname:'पेज का नाम खाली नहीं हो सकता।',cancel:'रद्द करें',save:'सेव करें',welcomeToast:'आपकी डायरी में स्वागत है, '}
+  };
+  const tr=k=>(T[lang]||T.en)[k]||T.en[k]||k;
+  function applyLanguage(){
+    $('setupIntro').textContent=tr('intro');$('ownerLabel').textContent=tr('name');$('ownerName').placeholder=tr('enter');$('saveOwner').textContent=tr('open');
+    $('welcomeView').querySelector('h2').textContent=tr('welcome');$('welcomeSubtitle').textContent=tr('subtitle');$('homeHeading').textContent=tr('my');
+    $('homeView').querySelector('.stat-label').textContent=tr('total');$('createBtn').textContent=tr('create');$('homeView').querySelectorAll('.subtitle')[1].textContent=tr('pages');$('saveNote').textContent=lang==='hi'?'आपकी डायरी इसी डिवाइस में अपने आप सेव होती है।':'Your diary is saved automatically on this device.';$('emptyHome').textContent=tr('waiting');
+    $('backHome').textContent=tr('back');$('createView').querySelector('.subtitle').textContent=tr('newrecord');$('createView').querySelector('h2').textContent=tr('newpage');
+    document.querySelector('[data-type="expense"]').textContent=tr('expense');document.querySelector('[data-type="earning"]').textContent=tr('earning');
+    $('createView').querySelector('label[for="newName"]').textContent=tr('pagename');$('newName').placeholder=tr('pagenamehint');$('createView').querySelector('label[for="newAmount"]').textContent=tr('starting');$('savePage').textContent=tr('createpage');
+    $('backPages').textContent=tr('allpages');$('detailView').querySelectorAll('.subtitle')[1].textContent=tr('addnew');$('detailView').querySelector('label[for="entryName"]').textContent=tr('entryname');$('entryName').placeholder=tr('entryhint');$('detailView').querySelector('label[for="entryAmount"]').textContent=tr('amount');$('addEntry').textContent=tr('add');$('detailView').querySelectorAll('.subtitle')[2].textContent=tr('entries');
+    $('renamePage').textContent=tr('rename');$('deletePage').textContent=tr('delete');$('balance').previousElementSibling.textContent=tr('balance');$('entryCount').previousElementSibling.textContent=tr('count');$('modalCancel').textContent=tr('cancel');$('modalSave').textContent=tr('save');
+  }
+ function load(){try{return JSON.parse(localStorage.getItem(KEY))||{pages:[]}}catch(e){return {pages:[]}}}
+ function persist(){
+   try{
+     localStorage.setItem(KEY,JSON.stringify(data));
+     localStorage.setItem('lena-dena-owner-v1',$('ownerName').value.trim()||localStorage.getItem('lena-dena-owner-v1')||'');
+     localStorage.setItem('lena-dena-language-v1',lang);
+   }catch(e){toast('Storage full or unavailable. Please export/backup your data.');}
+ }
+ // Save the latest in-memory diary again when the page is closed or moved to background.
+ window.addEventListener('pagehide',()=>{try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem('lena-dena-language-v1',lang);}catch(e){}});
+ 
+ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+ function money(n){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0)}
+ function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1900)}
+ function page(){return data.pages.find(p=>p.id===activeId)}
+ function balance(p){return Number(p.starting||0)+p.entries.reduce((sum,e)=>sum+(e.checked?(p.type==='earning'?1:-1)*Number(e.amount):0),0)}
+ function showView(which){
+   $('welcomeView').classList.toggle('hidden',which!=='welcome');
+   $('homeView').classList.toggle('hidden',which!=='home');
+   $('createView').classList.toggle('hidden',which!=='create');
+   $('detailView').classList.toggle('hidden',which!=='detail');
+   $('rightPage').className='page right '+which;
+   $('pageNo').textContent=which==='home'?'PAGE 01':which==='create'?'NEW PAGE':which==='welcome'?'WELCOME':'LEDGER';
+    $('backSetup').classList.toggle('hidden',which==='welcome');
+   $('rightPage').classList.remove('flipping');void $('rightPage').offsetWidth;$('rightPage').classList.add('flipping');
+ }
+ function renderHome(){
+   $('totalPages').textContent=data.pages.length;
+   $('pageList').innerHTML='';
+   $('emptyHome').classList.toggle('hidden',data.pages.length>0);
+   data.pages.forEach(p=>{
+     const el=document.createElement('div');el.className='page-item';
+     const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=p.name;
+     const small=document.createElement('small');small.textContent=(p.type==='expense'?tr('expense'):tr('earning'))+' · '+p.entries.length+' ENTRIES';
+     info.append(strong,small);
+     const val=document.createElement('span');val.style.cssText='font:12px Arial;color:#604329;white-space:nowrap';val.textContent=money(balance(p));
+     el.append(info,val);el.addEventListener('click',()=>openPage(p.id));$('pageList').append(el);
+   });
+ }
+ function openPage(id){activeId=id;renderDetail();showView('detail')}
+ function renderDetail(){
+   const p=page();if(!p)return;
+   $('detailName').textContent=p.name;$('detailType').textContent=p.type==='expense'?tr('expense'):tr('earning');
+   $('startingAmount').value=p.starting;
+   $('balance').textContent=money(balance(p));$('entryCount').textContent=p.entries.length;
+   $('entryList').innerHTML='';
+   if(!p.entries.length){$('entryList').innerHTML='<div class="empty">No entries yet. Add the first note above.</div>';return}
+   p.entries.forEach(e=>{
+     const row=document.createElement('div');row.className='entry';
+     const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!e.checked;cb.setAttribute('aria-label','Include '+e.name);
+     cb.addEventListener('change',()=>{e.checked=cb.checked;persist();renderDetail();renderHome()});
+     const name=document.createElement('div');name.className='entry-name'+(e.checked?' done':'');name.textContent=e.name;
+     const amount=document.createElement('div');amount.className='entry-amount';amount.textContent=money(e.amount);
+     const actions=document.createElement('div');actions.className='entry-actions';
+     const edit=document.createElement('button');edit.className='mini';edit.textContent=tr('edit');edit.onclick=()=>editEntry(e.id);
+     const del=document.createElement('button');del.className='mini';del.textContent=tr('remove');del.onclick=()=>deleteEntry(e.id);
+     actions.append(edit,del);row.append(cb,name,amount,actions);$('entryList').append(row);
+   });
+ }
+ let opening=false;
+ function openDiary(){
+   if(opening)return;opening=true;
+   $('cover').classList.add('opening');
+   setTimeout(()=>{
+     $('coverWrap').classList.add('hidden');$('book').style.display='block';
+     $('ownerName').value='';
+     $('languageChoice').value=lang;
+     applyLanguage();showView('welcome');
+     setTimeout(()=>$('ownerName').focus(),150);
+   },780);
+ }
+ // Simple tap/click interaction: tap anywhere on the closed diary to open it.
+ $('coverWrap').addEventListener('click',openDiary);
+ $('coverWrap').style.cursor='pointer';
+ function chooseLanguage(next){
+   lang=next;localStorage.setItem('lena-dena-language-v1',lang);
+   $('languageChoice').value=next;
+   $('englishTab').classList.toggle('active',next==='en');
+   $('hindiTab').classList.toggle('active',next==='hi');
+   applyLanguage();
+ }
+ $('englishTab').addEventListener('click',()=>chooseLanguage('en'));
+ $('hindiTab').addEventListener('click',()=>chooseLanguage('hi'));
+ $('backSetup').addEventListener('click',()=>{
+   $('ownerName').value=localStorage.getItem('lena-dena-owner-v1')||'';
+   $('languageChoice').value=lang;
+   chooseLanguage(lang);
+   showView('welcome');
+ });
+ chooseLanguage(lang);
+ $('saveOwner').onclick=()=>{
+   const name=$('ownerName').value.trim();
+   if(!name){toast(tr('entername'));$('ownerName').focus();return}
+   localStorage.setItem('lena-dena-owner-v1',name);localStorage.setItem('lena-dena-language-v1',lang);
+   $('homeHeading').textContent=lang==='hi' ? name+' की डायरी' : name+"'s Diary";
+   $('welcomeSubtitle').textContent=tr('subtitle');
+   renderHome();showView('home');toast(tr('welcomeToast')+name+'.');
+ };
+ $('ownerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('saveOwner').click()});
+ $('createBtn').onclick=()=>{selectedType='expense';document.querySelectorAll('.type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===selectedType));$('newName').value='';$('newAmount').value='';showView('create')};
+ document.querySelectorAll('.type-btn').forEach(b=>b.onclick=()=>{selectedType=b.dataset.type;document.querySelectorAll('.type-btn').forEach(x=>x.classList.toggle('active',x===b))});
+ $('backHome').onclick=()=>{renderHome();showView('home')};
+ $('backPages').onclick=()=>{activeId=null;renderHome();showView('home')};
+ $('savePage').onclick=()=>{
+   const name=$('newName').value.trim(), amount=Number($('newAmount').value||0);
+   if(!name){toast(tr('enterpage'));$('newName').focus();return}
+   if(amount<0||!Number.isFinite(amount)){toast(tr('validstart'));return}
+   const p={id:uid(),name,type:selectedType,starting:amount,entries:[]};data.pages.unshift(p);persist();renderHome();openPage(p.id);toast(tr('ready'));
+ };
+ $('startingAmount').addEventListener('change',()=>{const p=page();if(!p)return;const v=Number($('startingAmount').value);if(v<0||!Number.isFinite(v)){toast('Enter a valid amount.');renderDetail();return}p.starting=v;persist();renderDetail();renderHome()});
+ $('addEntry').onclick=()=>{
+   const p=page();if(!p)return;const name=$('entryName').value.trim(),amount=Number($('entryAmount').value);
+   if(!name){toast(tr('enterentry'));$('entryName').focus();return}
+   if(!Number.isFinite(amount)||amount<=0){toast(tr('validamount'));return}
+   p.entries.push({id:uid(),name,amount,checked:false});persist();$('entryName').value='';$('entryAmount').value='';renderDetail();renderHome();toast(tr('added'));
+ };
+ function editEntry(id){
+   const p=page(),e=p.entries.find(x=>x.id===id);if(!e)return;
+   modalOpen(tr('editentry'),`<div class="field"><label>Entry name</label><input class="text-input" id="modalName" value="${escapeAttr(e.name)}"></div><div class="field"><label>Amount (₹)</label><input class="amount-input" id="modalAmount" type="number" min="0.01" step="0.01" value="${e.amount}"></div>`,()=>{
+     const n=$('modalName').value.trim(),a=Number($('modalAmount').value);if(!n||!Number.isFinite(a)||a<=0){toast(tr('validedit'));return false}e.name=n;e.amount=a;persist();renderDetail();renderHome();return true;
+   });
+ }
+ function deleteEntry(id){const p=page();if(!p)return;const e=p.entries.find(x=>x.id===id);if(!e)return;
+   modalOpen('Delete this entry?',`<p style="line-height:1.5">“${escapeHtml(e.name)}” will be removed. If it was ticked, its amount will automatically be reversed.</p>`,()=>{p.entries=p.entries.filter(x=>x.id!==id);persist();renderDetail();renderHome();return true});
+ }
+ $('renamePage').onclick=()=>{const p=page();if(!p)return;modalOpen('Rename page',`<div class="field"><label>New page name</label><input class="text-input" id="modalName" value="${escapeAttr(p.name)}"></div>`,()=>{const n=$('modalName').value.trim();if(!n){toast(tr('emptyname'));return false}p.name=n;persist();renderDetail();renderHome();return true})};
+ $('deletePage').onclick=()=>{const p=page();if(!p)return;modalOpen('Delete this diary page?',`<p style="line-height:1.5">“${escapeHtml(p.name)}” and all its entries will be permanently deleted from this browser.</p>`,()=>{data.pages=data.pages.filter(x=>x.id!==activeId);activeId=null;persist();renderHome();showView('home');return true})};
+ function modalOpen(title,body,action){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalBackdrop').style.display='flex';modalAction=action}
+ $('modalCancel').onclick=()=>{$('modalBackdrop').style.display='none';modalAction=null};
+ $('modalSave').onclick=()=>{if(modalAction&&modalAction()){$('modalBackdrop').style.display='none';modalAction=null}};
+ $('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))$('modalCancel').click()});
+ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+ function escapeAttr(s){return escapeHtml(s)}
+})();
+</script>
+</body>
+</html>
